@@ -1,0 +1,131 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:snapledger/core/utils/utils.dart';
+import 'package:snapledger/shared/dialogs/basic_dialog.dart';
+import 'package:snapledger/shared/models/list_tile_data_model.dart';
+
+Widget buildMaterialList(BuildContext context, {String? title, required List<ListTileData> raw, Color? themeColor}) {
+  const outerRadius = 16.0;
+  const innerRadius = 4.0;
+  final scheme = Theme.of(context).colorScheme;
+  final splashColor = scheme.primary.withValues(alpha: 0.08);
+  final hoverColor = scheme.primary.withValues(alpha: 0.04);
+  final list = raw.where((tile) => tile.enable).toList();
+  final tt = Theme.of(context).textTheme;
+  final cs = Theme.of(context).colorScheme;
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    spacing: 4,
+    children: [
+      if (title != null)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+      for (var i = 0; i < list.length; i++)
+        if (list[i].enable)
+          Material(
+            color: themeColor ?? Theme.of(context).colorScheme.surfaceContainerLow,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(i == 0 ? outerRadius : innerRadius),
+                bottom: Radius.circular(i == list.length - 1 ? outerRadius : innerRadius),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: list[i].map(
+                normal: (data) => ListTile(
+                  leading: Icon(data.icon),
+                  title: Text(data.title, style: tt.titleMedium),
+                  subtitle: data.subtitle != null ? Text(data.subtitle ?? '') : null,
+                  splashColor: splashColor,
+                  hoverColor: hoverColor,
+                  focusColor: hoverColor,
+                  onTap: () => {
+                    if (data.needCheck)
+                      showConfirmLeaveDialog(
+                        context,
+                        title: data.checkTitle ?? '',
+                        text: data.checkContent ?? '',
+                        onDismiss: () => {},
+                        onConfirm: data.onClick,
+                      )
+                    else
+                      data.onClick(),
+                  },
+                  trailing: data.trailing ? const Icon(LucideIcons.chevronRight) : null,
+                ),
+                dropdown: (data) => ListTile(
+                  leading: Icon(data.icon),
+                  title: Text(data.title),
+                  subtitle: data.selected != null ? Text(data.optionsMap[data.selected] ?? '') : null,
+                  splashColor: splashColor,
+                  hoverColor: hoverColor,
+                  focusColor: hoverColor,
+                  onTap: () {
+                    showOptionsDialog(
+                      context,
+                      title: data.title,
+                      optionsMap: data.optionsMap,
+                      selectedKey: data.selected,
+                      onChanged: (key) => data.onChanged(i, key),
+                    );
+                  },
+                  trailing: const Icon(LucideIcons.chevronRight),
+                ),
+                detail: (data) => ListTile(
+                  leading: Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Column(
+                      children: [
+                        Text(data.date.day.toString(), style: tt.titleLarge.bold?.copyWith(color: cs.onSurfaceVariant)),
+                        Text(
+                          'weekday_${data.date.weekday}'.tr(),
+                          style: tt.titleSmall?.copyWith(color: cs.onSurfaceVariant),
+                        ),
+                      ],
+                    ),
+                  ),
+                  title: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 4,
+                    children: [
+                      Text(data.type, style: tt.titleSmall?.copyWith(color: cs.primary)),
+                      Text(
+                        data.title,
+                        style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold, color: cs.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                  subtitle: Row(
+                    spacing: 4,
+                    children: [
+                      if (data.subtitle != null)
+                        Container(
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(color: cs.surface, borderRadius: BorderRadius.circular(4)),
+                          child: Text(data.subtitle ?? '', style: tt.titleSmall),
+                        ),
+                      if (data.content != null)
+                        Text(
+                          data.content ?? '',
+                          style: tt.titleSmall.bold?.copyWith(color: cs.onSurfaceVariant.withValues(alpha: 0.7)),
+                        ),
+                    ],
+                  ),
+                  splashColor: splashColor,
+                  hoverColor: hoverColor,
+                  focusColor: hoverColor,
+                  onTap: data.onClick,
+                  trailing: data.trailingText,
+                ),
+              ),
+            ),
+          ),
+    ],
+  );
+}

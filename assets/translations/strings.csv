@@ -1,7 +1,25 @@
 key,en,zh_TW
+new_version,New Version {},發現新版本 {}
 overview,Overview,總覽
 analytics,Analytics,分析
 details,Details,明細
 settings,Settings,設定
 quick_add_by_pull_up,Quick add by pull up,上拉快速記帳
 release_to_trigger,Release to trigger,放開即可觸發
+coming_soon,Coming Soon,敬請期待
+income,Income,收入
+expense,Expense,支出
+weekday_1,Mon,週一
+weekday_2,Tue,週二
+weekday_3,Wed,週三
+weekday_4,Thu,週四
+weekday_5,Fri,週五
+weekday_6,Sat,週六
+weekday_7,Sun,週日
+dark_mode,Dark mode,深色模式
+api_key,API key,API 金鑰
+model,Model,模型
+custom_prompt,Custom prompt,自訂提示詞
+habit,Habit,習慣
+general,General,一般
+ai_settings,AI settings,AI 設定

@@ -14,12 +14,32 @@ class OverviewPage extends StatefulWidget {
 }
 
 class _OverviewPageState extends State<OverviewPage> {
+  final items = ['Test item', 'Test item', 'Test item', 'Test item', 'Test item'];
+  final Set<int> visible = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _playStagger();
+  }
+
+  Future<void> _playStagger() async {
+    for (int i = 0; i < items.length; i++) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
+      setState(() => visible.add(i));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final radius = 150;
+    final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
 
     return PullUpAction(
+      maxLift: 125,
+      triggerOffset: 100,
       onTrigger: () {},
       hintBuilder: (BuildContext context, double pullDistance, bool ready) => gestureTooltip(
         top: 0,
@@ -27,7 +47,7 @@ class _OverviewPageState extends State<OverviewPage> {
         left: 0,
         right: 0,
         showHint: pullDistance > 6,
-        icon: ready ? LucideIcons.plus : LucideIcons.chevronUp,
+        icon: ready ? LucideIcons.pencil : LucideIcons.chevronUp,
         text: ready ? 'release_to_trigger'.tr() : 'quick_add_by_pull_up'.tr(),
       ),
       child: Scaffold(
@@ -49,9 +69,24 @@ class _OverviewPageState extends State<OverviewPage> {
                         SizedBox(
                           width: radius * 2,
                           height: radius * 2,
+                          child: CircularProgressIndicator(
+                            value: 0.9,
+                            backgroundColor: cs.surfaceContainerLowest,
+                            color: cs.primary.withValues(alpha: 0.2),
+                            // ignore: deprecated_member_use
+                            year2023: false,
+                            strokeWidth: 20,
+                            strokeCap: StrokeCap.round,
+                          ),
+                        ),
+                        SizedBox(
+                          width: radius * 2,
+                          height: radius * 2,
                           child: const CircularProgressIndicator(
                             value: 0.8,
-                            year2023: false, // ignore: deprecated_member_use
+                            backgroundColor: Colors.transparent,
+                            // ignore: deprecated_member_use
+                            year2023: false,
                             strokeWidth: 20,
                             strokeCap: StrokeCap.round,
                           ),
@@ -73,18 +108,41 @@ class _OverviewPageState extends State<OverviewPage> {
                   ),
 
                   // Legend
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 8,
+                  const SizedBox(height: 52),
+                  Column(
                     children: [
-                      for (int i = 0; i < 5; i++)
-                        Chip(
-                          avatar: CircleAvatar(backgroundColor: Colors.accents[i], radius: 5),
-                          label: Text('test item', style: tt.titleMedium),
-                        ),
+                      ...items.asMap().entries.map((entry) {
+                        final show = visible.contains(entry.key);
+                        return TweenAnimationBuilder<double>(
+                          key: ValueKey('row_${entry.key}'),
+                          tween: Tween(begin: show ? 1 : 0, end: show ? 1 : 0),
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, value, child) {
+                            return Opacity(
+                              opacity: value,
+                              child: Transform.translate(
+                                offset: Offset(40 * (1 - value), 0),
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: Row(
+                            spacing: 12,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                entry.value,
+                                style: tt.titleMedium?.copyWith(color: cs.onSurfaceVariant.withValues(alpha: 0.7)),
+                              ),
+                              const SizedBox(width: 8),
+                              Text('\$-320', style: tt.titleMedium),
+                            ],
+                          ),
+                        );
+                      }),
                     ],
                   ),
-                  // Text('Test Item'),
                 ],
               ),
             ),
