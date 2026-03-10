@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:snapledger/core/theme/typography.dart';
-import 'package:snapledger/core/utils/utils.dart';
+import 'package:snapledger/core/utils/useful_extension.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:snapledger/shared/widgets/gesture_tooltip.dart';
 import 'package:snapledger/shared/widgets/pull_up_action.dart';

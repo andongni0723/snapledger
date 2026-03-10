@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:snapledger/core/utils/utils.dart';
+import 'package:snapledger/core/utils/useful_extension.dart';
 
 class MonthPickerRow extends StatefulWidget {
-  const MonthPickerRow({super.key});
+  final Function(DateTime) onSelected;
+
+  const MonthPickerRow({super.key, required this.onSelected});
 
   @override
   State<MonthPickerRow> createState() => _MonthPickerRowState();
@@ -42,9 +44,10 @@ class _MonthPickerRowState extends State<MonthPickerRow> {
 
     Widget button(int index, DateTime date, bool isSelected) {
       return GestureDetector(
-        onTap: () => setState(() {
-          _selectIndex = index;
-        }),
+        onTap: () {
+          setState(() => _selectIndex = index);
+          widget.onSelected(date);
+        },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 100),
           curve: Curves.easeInOut,

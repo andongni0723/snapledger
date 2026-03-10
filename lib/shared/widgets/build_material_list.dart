@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:snapledger/core/utils/utils.dart';
+import 'package:snapledger/core/utils/useful_extension.dart';
 import 'package:snapledger/shared/dialogs/basic_dialog.dart';
 import 'package:snapledger/shared/models/list_tile_data_model.dart';
 
@@ -58,6 +58,7 @@ Widget buildMaterialList(BuildContext context, {String? title, required List<Lis
                   },
                   trailing: data.trailing ? const Icon(LucideIcons.chevronRight) : null,
                 ),
+
                 dropdown: (data) => ListTile(
                   leading: Icon(data.icon),
                   title: Text(data.title),
@@ -76,6 +77,7 @@ Widget buildMaterialList(BuildContext context, {String? title, required List<Lis
                   },
                   trailing: const Icon(LucideIcons.chevronRight),
                 ),
+
                 detail: (data) => ListTile(
                   leading: Padding(
                     padding: const EdgeInsets.only(right: 8.0),
@@ -95,10 +97,9 @@ Widget buildMaterialList(BuildContext context, {String? title, required List<Lis
                     spacing: 4,
                     children: [
                       Text(data.type, style: tt.titleSmall?.copyWith(color: cs.primary)),
-                      Text(
-                        data.title,
-                        style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold, color: cs.onSurfaceVariant),
-                      ),
+
+                      // Title
+                      Text(data.title,maxLines: 1,  style: tt.titleMedium.bold?.copyWith(color: cs.onSurfaceVariant, overflow: TextOverflow.ellipsis)),
                     ],
                   ),
                   subtitle: Row(
@@ -113,7 +114,9 @@ Widget buildMaterialList(BuildContext context, {String? title, required List<Lis
                       if (data.content != null)
                         Text(
                           data.content ?? '',
-                          style: tt.titleSmall.bold?.copyWith(color: cs.onSurfaceVariant.withValues(alpha: 0.7)),
+                          style: tt.titleSmall.bold?.copyWith(
+                            color: cs.onSurfaceVariant.withValues(alpha: 0.7),
+                          ),
                         ),
                     ],
                   ),

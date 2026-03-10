@@ -1,12 +1,14 @@
+import 'package:collection/collection.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:snapledger/core/error/error_logger.dart';
-import 'package:snapledger/core/theme/typography.dart';
-import 'package:snapledger/core/utils/utils.dart';
-import 'package:snapledger/shared/models/list_tile_data_model.dart';
-import 'package:snapledger/shared/widgets/build_material_list.dart';
+import 'package:snapledger/core/utils/useful_extension.dart';
+import 'package:snapledger/core/utils/utils_function.dart';
+import 'package:snapledger/shared/models/transaction_record_model.dart';
+import 'package:snapledger/shared/widgets/build_transaction_record_list.dart';
 import 'package:snapledger/shared/widgets/month_picker_row.dart';
+import 'package:snapledger/shared/widgets/optional_tab.dart';
 
 class DetailsPage extends StatefulWidget {
   const DetailsPage({super.key});
@@ -16,37 +18,44 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
-  int? _selectIndex = 0;
+  int? _tabSelectedIndex = 0;
+  DateTime _anchor = DateTime.now();
+  static final _filterWithAmountTab = [(i) => i >= 0, (i) => i < 0];
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final tt = Theme.of(context).textTheme;
 
-    final typeLabTitle = ['income'.tr(), 'expense'.tr()];
-    final typeLabContent = [84392, 42290]; //FIXME: fake data
-    final typeLabContentColor = [Colors.green[400], Colors.red[300]];
-    final detailsDetail = [
-      for (int i = 0; i < 10; i++)
-        ListTileData.detail(
-          date: DateTime(2026, 2, 12),
-          title: '帳單明細',
-          subtitle: '載具',
-          content: 'DK1093APNV',
-          type: '飲食',
-          trailingText: Text(
-            '\$-250',
-            style: tt.headlineSmall?.copyWith(
-              fontVariations: [FontVariation('ROND', 100), FontVariation.width(70), FontVariation.weight(700)],
-            ),
-          ),
-          onClick: () {},
-        ),
+    // filter target year and month
+    final rawTransactionRecordList = buildFakeTransactionRecordList()
+        .where((r) => r.date.year == _anchor.year && r.date.month == _anchor.month)
+        .toList();
+
+    // filter income / expense
+    final transactionRecordList = rawTransactionRecordList
+        .where((r) => _tabSelectedIndex != null ? _filterWithAmountTab[_tabSelectedIndex!](r.amount) : true)
+        .toList();
+
+    final totalIncome = rawTransactionRecordList.where((r) => _filterWithAmountTab[0](r)).map((r) => r.amount).sum;
+    final totalExpense = rawTransactionRecordList.where((r) => _filterWithAmountTab[1](r)).map((r) => -r.amount).sum;
+
+    final typeLabDetails = [
+      TabDetail(
+        title: 'income'.tr(),
+        content: parseAmount(totalIncome),
+        selectedColor: Colors.green.shade400,
+        unselectedColor: context.cs.onSurfaceVariant.withValues(alpha: 0.7),
+      ),
+      TabDetail(
+        title: 'expense'.tr(),
+        content: parseAmount(totalExpense),
+        selectedColor: Colors.red.shade300,
+        unselectedColor: context.cs.onSurfaceVariant.withValues(alpha: 0.7),
+      ),
     ];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('details'.tr(), style: tt.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        title: Text('details'.tr(), style: context.tt.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(onPressed: comingSoon, icon: Icon(LucideIcons.search)),
           IconButton(onPressed: comingSoon, icon: Icon(LucideIcons.moreVertical)),
@@ -61,7 +70,10 @@ class _DetailsPageState extends State<DetailsPage> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(padding: const EdgeInsets.symmetric(vertical: 16.0), child: MonthPickerRow()),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: MonthPickerRow(onSelected: (d) => setState(() => _anchor = d)),
+            ),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {},
@@ -72,63 +84,10 @@ class _DetailsPageState extends State<DetailsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: 16,
                     children: [
-                      Row(
-                        spacing: 8,
-                        children: [
-                          for (int i = 0; i < 2; i++)
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  debugPrint('print income');
-                                  setState(() {
-                                    _selectIndex = _selectIndex == i ? null : i;
-                                  });
-                                  debugPrint(_selectIndex.toString());
-                                },
-                                child: AnimatedContainer(
-                                  height: 80,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: _selectIndex == i ? cs.surfaceContainerHighest : cs.surfaceContainerLow,
-                                    borderRadius: BorderRadius.circular(_selectIndex == i ? 50 : 16),
-                                  ),
-                                  duration: const Duration(milliseconds: 100),
-                                  child: Column(
-                                    spacing: 8,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        typeLabTitle[i],
-                                        style: tt.titleMedium.bold?.copyWith(
-                                          color: _selectIndex == i || _selectIndex == null
-                                              ? cs.onSurface
-                                              : cs.onSurfaceVariant.withValues(alpha: 0.7),
-                                        ),
-                                      ),
-                                      Text(
-                                        '\$${typeLabContent[i]}',
-                                        style: tt.titleLarge?.copyWith(
-                                          color: _selectIndex == i || _selectIndex == null
-                                              ? typeLabContentColor[i]
-                                              : cs.onSurfaceVariant.withValues(alpha: 0.7),
-                                          fontFamily: AppTypography.fontFamily,
-                                          fontVariations: [
-                                            FontVariation('ROND', 100),
-                                            FontVariation.width(70),
-                                            FontVariation.weight(750),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
+                      OptionalTab(details: typeLabDetails, onSelected: (i) => setState(() => _tabSelectedIndex = i)),
                       const SizedBox(height: 16),
-                      Text('details'.tr(), style: tt.titleSmall.bold),
-                      buildMaterialList(context, raw: detailsDetail),
+                      Text('details'.tr(), style: context.tt.titleSmall.bold),
+                      buildTransactionRecordList(context, records: transactionRecordList),
                       const SizedBox(height: 60), // For FAB
                     ],
                   ),
@@ -141,3 +100,132 @@ class _DetailsPageState extends State<DetailsPage> {
     );
   }
 }
+
+List<TransactionRecordModel> buildFakeTransactionRecordList() => [
+  TransactionRecordModel(
+    id: '0',
+    title: 'Online Service Bundle',
+    date: DateTime(2026, 3, 30),
+    amount: -1160,
+    category: 'Fees',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+  TransactionRecordModel(
+    id: '1',
+    title: 'Government Cash Bonus',
+    date: DateTime(2026, 3, 30),
+    amount: 10000,
+    category: 'Bonus',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+  TransactionRecordModel(
+    id: '2',
+    title: 'Game Pass Subscription',
+    date: DateTime(2026, 3, 26),
+    amount: 0,
+    category: 'Entertainment',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+  TransactionRecordModel(
+    id: '3',
+    title: 'Performance Reward',
+    date: DateTime(2026, 3, 25),
+    amount: 500,
+    category: 'Bonus',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+  TransactionRecordModel(
+    id: '4',
+    title: 'Game Content Pack',
+    date: DateTime(2026, 3, 23),
+    amount: -30,
+    category: 'Entertainment',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+  TransactionRecordModel(
+    id: '5',
+    title: 'Monthly Game Pass',
+    date: DateTime(2026, 3, 23),
+    amount: -170,
+    category: 'Entertainment',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+  TransactionRecordModel(
+    id: '6',
+    title: 'In-App Currency Top-Up',
+    date: DateTime(2026, 3, 23),
+    amount: -6173,
+    category: 'Entertainment',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+  TransactionRecordModel(
+    id: '7',
+    title: 'Food Purchase #A17',
+    date: DateTime(2026, 3, 19),
+    amount: -330,
+    category: 'Food',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+  TransactionRecordModel(
+    id: '8',
+    title: 'Entertainment Allowance',
+    date: DateTime(2026, 3, 16),
+    amount: 3660,
+    category: 'Allowance',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+  TransactionRecordModel(
+    id: '9',
+    title: 'Mobile Game Credits',
+    date: DateTime(2026, 3, 16),
+    amount: -330,
+    category: 'Entertainment',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+  TransactionRecordModel(
+    id: '10',
+    title: 'Keyboard Purchase',
+    date: DateTime(2026, 3, 12),
+    amount: -4990,
+    category: 'Shopping',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+  TransactionRecordModel(
+    id: '11',
+    title: 'Meal Order #B24',
+    date: DateTime(2026, 3, 8),
+    amount: -140,
+    category: 'Food',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+  TransactionRecordModel(
+    id: '12',
+    title: 'Untitled Entry',
+    date: DateTime(2026, 3, 5),
+    amount: -200,
+    category: 'Uncategorized',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+  TransactionRecordModel(
+    id: '13',
+    title: 'Fast Food Order #C08',
+    date: DateTime(2026, 3, 2),
+    amount: -137,
+    category: 'Food',
+    type: 'Manual',
+    note: 'Personal',
+  ),
+];

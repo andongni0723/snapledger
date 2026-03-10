@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:snapledger/core/error/error_logger.dart';
+import 'package:snapledger/core/utils/useful_extension.dart';
 import 'package:snapledger/shared/models/update_info_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:snapledger/core/error/result.dart';
@@ -69,7 +70,7 @@ Future<void> showUpdateVersionDialog(BuildContext context) async {
                 child: Text(
                   // '發現新版本 $latestVersion',
                   'new_version'.tr(args: [latestVersion.toString()]),
-                  style: ts.headlineMedium?.copyWith(color: cs.primaryFixed, fontWeight: FontWeight.w600),
+                  style: ts.headlineMedium.bold?.copyWith(color: cs.primaryFixed),
                 ),
               ),
 
@@ -126,7 +127,7 @@ Widget outlineButtonWithTheme({
     child: ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 8),
       leading: Icon(icon, size: 28),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
       subtitle: Text(subtitle, style: const TextStyle(fontWeight: FontWeight.w400)),
     ),
   );

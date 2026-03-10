@@ -24,6 +24,8 @@ int compareVersion(String a, String b) {
   return 0;
 }
 
+String parseAmount(double amount) => amount >= 0 ? '\$$amount' : '-\$${-amount}';
+
 double bytesToMiB(int bytes, {int fractionDigits = 2}) => bytes / (1024 * 1024);
 
 extension StringPrefix on String {
