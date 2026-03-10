@@ -34,7 +34,7 @@ abstract class ListTileData with _$ListTileData {
     String? subtitle,
     String? content,
     required DateTime date,
-    Text? trailingText,
+    Widget? trailingText,
     required VoidCallback onClick,
     @Default(true) bool enable,
   }) = _ListTileDetail;

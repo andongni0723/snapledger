@@ -18,13 +18,12 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
-  int? _tabSelectedIndex = 0;
+  int? _tabSelectedIndex = 1;
   DateTime _anchor = DateTime.now();
   static final _filterWithAmountTab = [(i) => i >= 0, (i) => i < 0];
 
   @override
   Widget build(BuildContext context) {
-
     // filter target year and month
     final rawTransactionRecordList = buildFakeTransactionRecordList()
         .where((r) => r.date.year == _anchor.year && r.date.month == _anchor.month)
@@ -35,8 +34,12 @@ class _DetailsPageState extends State<DetailsPage> {
         .where((r) => _tabSelectedIndex != null ? _filterWithAmountTab[_tabSelectedIndex!](r.amount) : true)
         .toList();
 
-    final totalIncome = rawTransactionRecordList.where((r) => _filterWithAmountTab[0](r)).map((r) => r.amount).sum;
-    final totalExpense = rawTransactionRecordList.where((r) => _filterWithAmountTab[1](r)).map((r) => -r.amount).sum;
+    final totalIncome = rawTransactionRecordList.map((r) => r.amount).where((r) => _filterWithAmountTab[0](r)).sum;
+    final totalExpense = rawTransactionRecordList
+        .map((r) => r.amount)
+        .where((r) => _filterWithAmountTab[1](r))
+        .map((r) => -r)
+        .sum;
 
     final typeLabDetails = [
       TabDetail(
@@ -87,7 +90,11 @@ class _DetailsPageState extends State<DetailsPage> {
                       OptionalTab(details: typeLabDetails, onSelected: (i) => setState(() => _tabSelectedIndex = i)),
                       const SizedBox(height: 16),
                       Text('details'.tr(), style: context.tt.titleSmall.bold),
-                      buildTransactionRecordList(context, records: transactionRecordList),
+                      buildTransactionRecordList(
+                        context,
+                        expenseHighlight: _tabSelectedIndex == null,
+                        records: transactionRecordList,
+                      ),
                       const SizedBox(height: 60), // For FAB
                     ],
                   ),
@@ -229,3 +236,4 @@ List<TransactionRecordModel> buildFakeTransactionRecordList() => [
     note: 'Personal',
   ),
 ];
+

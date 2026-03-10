@@ -158,7 +158,7 @@ return detail(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String title,  String? subtitle,  IconData icon,  VoidCallback onClick,  bool needCheck,  String? checkTitle,  String? checkContent,  bool enable,  bool trailing)?  normal,TResult Function( String title,  IconData icon,  VoidCallback onClick,  Map<String, String> optionsMap,  String? selected,  void Function(int, String) onChanged,  bool enable)?  dropdown,TResult Function( String type,  String title,  String? subtitle,  String? content,  DateTime date,  Text? trailingText,  VoidCallback onClick,  bool enable)?  detail,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String title,  String? subtitle,  IconData icon,  VoidCallback onClick,  bool needCheck,  String? checkTitle,  String? checkContent,  bool enable,  bool trailing)?  normal,TResult Function( String title,  IconData icon,  VoidCallback onClick,  Map<String, String> optionsMap,  String? selected,  void Function(int, String) onChanged,  bool enable)?  dropdown,TResult Function( String type,  String title,  String? subtitle,  String? content,  DateTime date,  Widget? trailingText,  VoidCallback onClick,  bool enable)?  detail,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ListTileNormal() when normal != null:
 return normal(_that.title,_that.subtitle,_that.icon,_that.onClick,_that.needCheck,_that.checkTitle,_that.checkContent,_that.enable,_that.trailing);case _ListTileDropdown() when dropdown != null:
@@ -181,7 +181,7 @@ return detail(_that.type,_that.title,_that.subtitle,_that.content,_that.date,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String title,  String? subtitle,  IconData icon,  VoidCallback onClick,  bool needCheck,  String? checkTitle,  String? checkContent,  bool enable,  bool trailing)  normal,required TResult Function( String title,  IconData icon,  VoidCallback onClick,  Map<String, String> optionsMap,  String? selected,  void Function(int, String) onChanged,  bool enable)  dropdown,required TResult Function( String type,  String title,  String? subtitle,  String? content,  DateTime date,  Text? trailingText,  VoidCallback onClick,  bool enable)  detail,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String title,  String? subtitle,  IconData icon,  VoidCallback onClick,  bool needCheck,  String? checkTitle,  String? checkContent,  bool enable,  bool trailing)  normal,required TResult Function( String title,  IconData icon,  VoidCallback onClick,  Map<String, String> optionsMap,  String? selected,  void Function(int, String) onChanged,  bool enable)  dropdown,required TResult Function( String type,  String title,  String? subtitle,  String? content,  DateTime date,  Widget? trailingText,  VoidCallback onClick,  bool enable)  detail,}) {final _that = this;
 switch (_that) {
 case _ListTileNormal():
 return normal(_that.title,_that.subtitle,_that.icon,_that.onClick,_that.needCheck,_that.checkTitle,_that.checkContent,_that.enable,_that.trailing);case _ListTileDropdown():
@@ -203,7 +203,7 @@ return detail(_that.type,_that.title,_that.subtitle,_that.content,_that.date,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String title,  String? subtitle,  IconData icon,  VoidCallback onClick,  bool needCheck,  String? checkTitle,  String? checkContent,  bool enable,  bool trailing)?  normal,TResult? Function( String title,  IconData icon,  VoidCallback onClick,  Map<String, String> optionsMap,  String? selected,  void Function(int, String) onChanged,  bool enable)?  dropdown,TResult? Function( String type,  String title,  String? subtitle,  String? content,  DateTime date,  Text? trailingText,  VoidCallback onClick,  bool enable)?  detail,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String title,  String? subtitle,  IconData icon,  VoidCallback onClick,  bool needCheck,  String? checkTitle,  String? checkContent,  bool enable,  bool trailing)?  normal,TResult? Function( String title,  IconData icon,  VoidCallback onClick,  Map<String, String> optionsMap,  String? selected,  void Function(int, String) onChanged,  bool enable)?  dropdown,TResult? Function( String type,  String title,  String? subtitle,  String? content,  DateTime date,  Widget? trailingText,  VoidCallback onClick,  bool enable)?  detail,}) {final _that = this;
 switch (_that) {
 case _ListTileNormal() when normal != null:
 return normal(_that.title,_that.subtitle,_that.icon,_that.onClick,_that.needCheck,_that.checkTitle,_that.checkContent,_that.enable,_that.trailing);case _ListTileDropdown() when dropdown != null:
@@ -394,7 +394,7 @@ class _ListTileDetail implements ListTileData {
  final  String? subtitle;
  final  String? content;
  final  DateTime date;
- final  Text? trailingText;
+ final  Widget? trailingText;
 @override final  VoidCallback onClick;
 @override@JsonKey() final  bool enable;
 
@@ -428,7 +428,7 @@ abstract mixin class _$ListTileDetailCopyWith<$Res> implements $ListTileDataCopy
   factory _$ListTileDetailCopyWith(_ListTileDetail value, $Res Function(_ListTileDetail) _then) = __$ListTileDetailCopyWithImpl;
 @override @useResult
 $Res call({
- String type, String title, String? subtitle, String? content, DateTime date, Text? trailingText, VoidCallback onClick, bool enable
+ String type, String title, String? subtitle, String? content, DateTime date, Widget? trailingText, VoidCallback onClick, bool enable
 });
 
 
@@ -453,7 +453,7 @@ as String,subtitle: freezed == subtitle ? _self.subtitle : subtitle // ignore: c
 as String?,content: freezed == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
 as String?,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
 as DateTime,trailingText: freezed == trailingText ? _self.trailingText : trailingText // ignore: cast_nullable_to_non_nullable
-as Text?,onClick: null == onClick ? _self.onClick : onClick // ignore: cast_nullable_to_non_nullable
+as Widget?,onClick: null == onClick ? _self.onClick : onClick // ignore: cast_nullable_to_non_nullable
 as VoidCallback,enable: null == enable ? _self.enable : enable // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
