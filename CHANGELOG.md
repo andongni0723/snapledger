@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.2
+更新內容：
+- 更改資料預覽文字
+
+Updates:
+- Alter the fake data preview label 
+
 ## v0.2.1
 更新內容:
 - 重構明細頁資料結構，新增交易紀錄 model 與序列化檔案
